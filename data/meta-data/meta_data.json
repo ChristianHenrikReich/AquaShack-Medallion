@@ -21,5 +21,12 @@
         "destination": "sales_Transactions",
         "projected_columns": [],
         "custom_transform": "enrich_transactions"
+    },
+    {
+        "source": "Files/data/Sales/Cow_Camera_Overviews",
+        "format": "image",
+        "destination": "sales_Cow_Camera_Overviews",
+        "projected_columns": [],
+        "custom_transform": "count_cows_from_overview"
     }
 ]
