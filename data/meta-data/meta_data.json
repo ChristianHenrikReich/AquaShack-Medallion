@@ -1,6 +1,6 @@
 [
     {
-        "source": "Files/data/Sales/Customers/Customers.csv",
+        "source": "Files/data/Sales/Customers",
         "format": "csv",
         "destination": "sales_Customers",
         "projected_columns": [
@@ -10,13 +10,13 @@
         ]
     },
     {
-        "source": "Files/data/Sales/Products/Products.parquet",
+        "source": "Files/data/Sales/Products",
         "format": "parquet",
         "destination": "sales_Products",
         "projected_columns": []
     },
     {
-        "source": "Files/data/Sales/Transactions/Transactions.csv",
+        "source": "Files/data/Sales/Transactions",
         "format": "csv",
         "destination": "sales_Transactions",
         "projected_columns": [],
