@@ -73,6 +73,70 @@ def enrich_transactions(df: DataFrame, meta_entity: dict) -> DataFrame:
 Signature contract: `(df, meta_entity) -> df`. The caller still handles the
 write, so all write policy (IDs, audit, mode, projection) stays in one place.
 
+Transform implementations live in `notebooks/AquaShack_custom_transforms.ipynb`.
+The Bronze to Silver notebook `%run`s `AquaShack_functions` first (so the
+registry and decorator exist) and then `AquaShack_custom_transforms` (so each
+`@register_custom_transform(...)` populates the registry) before the
+orchestration loop dispatches.
+
+## Unstructured data and Microsoft AI Foundry
+
+The `custom_transform` hook is not limited to tabular cleanup. It is also how
+AquaShack handles **unstructured data** — things the default dedupe + fill
+nulls flow cannot express — by reading files with a binary reader and calling
+an AI service to reduce each file to a row.
+
+The included example is `count_cows_from_overview`: PNGs partitioned under
+`Files/data/Sales/Cow_Camera_Overviews/year=YYYY/month=MM/day=DD/` are read as
+binary, scored by Azure AI Vision (SynapseML `AnalyzeImage`), and reduced to
+one row per image with `id`, `cow_count`, and the partition columns. The meta
+entity just looks like any other:
+
+```json
+{
+    "source": "Files/data/Sales/Cow_Camera_Overviews",
+    "format": "image",
+    "destination": "dbo.sales_cow_camera_overviews",
+    "projected_columns": [],
+    "custom_transform": "count_cows_from_overview"
+}
+```
+
+### Enabling the AI Foundry integration
+
+The computer vision transform calls an **Azure AI Vision** resource. You
+provision one in **Microsoft AI Foundry** (or directly in the Azure portal as
+an *Azure AI services* / *Computer Vision* resource) and copy its **key** and
+**endpoint**. Then in `Setup.ipynb`:
+
+```python
+ENABLE_COMPUTER_VISION = True
+COMPUTER_VISION_SERVICE_KEY = "<key from AI Foundry>"
+COMPUTER_VISION_ENDPOINT   = "<endpoint from AI Foundry>"
+```
+
+On the next Setup run:
+
+1. Cow camera PNGs are seeded into the bronze lakehouse.
+2. `meta_data.json` is seeded **with** the `count_cows_from_overview` entity.
+3. The key and endpoint are **stamped into the parameters cell** at the top
+   of `AquaShack_custom_transforms.ipynb` as it is imported into the
+   workspace, so the transform can read them as module-level variables once
+   `%run` pulls the notebook in.
+
+When `ENABLE_COMPUTER_VISION = False` (default):
+
+1. Cow camera PNGs are not seeded.
+2. The `count_cows_from_overview` entity is stripped out of the seeded
+   `meta_data.json`, so Bronze to Silver never tries to process it.
+3. The parameters cell is stamped with placeholder values. The transform is
+   still registered but will never be dispatched.
+
+This way the workshop runs end to end without an AI Foundry resource, and
+enabling the AI path is a single boolean + two strings in Setup — no edits to
+the transform notebook, the pipeline, or the canonical `meta_data.json` in
+the repo.
+
 ## Articles
 
 Same articles as the upstream project:
