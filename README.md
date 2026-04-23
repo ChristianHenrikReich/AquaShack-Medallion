@@ -25,6 +25,8 @@ needed is provisioned.
 
 Medallion architecture, three lakehouses:
 
+<img width="800" height="450" alt="image" src="https://github.com/user-attachments/assets/e3a30981-9a2a-409d-bafa-1f79d9d026e1" />
+
 - **Bronze**: data in original format where possible. Relational sources land
   as parquet. No Delta, no re-writing, no querying.
 - **Silver**: aligned, cleaned data. All Delta tables.
