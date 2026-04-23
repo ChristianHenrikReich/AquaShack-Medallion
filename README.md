@@ -1,8 +1,13 @@
 # AquaShack-Medallion
 
 A pico-example of a meta-data driven lakehouse for Microsoft Fabric, forked from
-[AquaShack](https://github.com/ChristianHenrikReich/AquaShack). Two differences
-from the original:
+[AquaShack](https://github.com/ChristianHenrikReich/AquaShack).
+
+> **Status:** the upstream [AquaShack](https://github.com/ChristianHenrikReich/AquaShack)
+> project is under code freeze. AquaShack-Medallion is where I will be
+> implementing my ideas about building lakehouse solutions going forward.
+
+Two differences from the original:
 
 1. The three layers are renamed to the classic medallion names: **Bronze**,
    **Silver**, and **Gold** (previously Landing, Base, Curated).
